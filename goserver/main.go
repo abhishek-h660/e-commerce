@@ -24,6 +24,13 @@ func main() {
 
 	products := api.NewProductController(db)
 	r.HandleFunc("/products", products.ListProducts()).Methods("GET")
-	r.HandleFunc("/getlist", products.AddProducts()).Methods("GET")
+	r.HandleFunc("/getlist", products.AddProducts()).Methods("POST")
+
+	cart := api.NewCartController(db)
+	r.HandleFunc("/add_to_cart", cart.AddToCart()).Methods("POST")
+	r.HandleFunc("/list_cart_items", cart.ListCartItems()).Methods("GET")
+	r.HandleFunc("/remove_from_cart", cart.RemoveFromCart()).Methods("DELETE")
+	//r.HandleFunc("/buy_now", cart.AddToCart()).Methods("POST")
+
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
 }

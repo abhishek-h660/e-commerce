@@ -5,9 +5,9 @@ import Footer from './components/footer';
 import {
   BrowserRouter,
   Routes,
-  Route,
-  Link
+  Route
 } from 'react-router-dom';
+import CartItems from './components/cart';
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
 
           <Route exact path='/become_a_seller' element={< HomeHeader />}></Route>
           <Route exact path='/more' element={< HomeHeader />}></Route>
-          <Route exact path='/cart' element={< HomeHeader />}></Route>
+          <Route exact path='/cart' element={< CartItems />}></Route>
           <Route exact path='/signin' element={< HomeHeader />}></Route>
           <Route exact path='/signup' element={< HomeHeader />}></Route>
         </Routes>

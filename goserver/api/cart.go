@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"shri-krishangan/config"
 	"shri-krishangan/models"
@@ -37,6 +38,7 @@ func (c *CartController) ListCartItems() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
+			return
 		}
 		var cartItems []models.CartItem
 		cur.All(config.DefaultCtx(), &cartItems)
@@ -49,8 +51,22 @@ func (c *CartController) ListCartItems() http.HandlerFunc {
 func (c *CartController) AddToCart() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var cartItem models.CartItem
-		json.NewDecoder(r.Body).Decode(&cartItem)
-		cartItem.Save(c.Database)
+		w.Header().Set("content-type", "application/json")
+		err := json.NewDecoder(r.Body).Decode(&cartItem)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusExpectationFailed)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		res, err := cartItem.Save(c.Database)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
@@ -66,6 +82,7 @@ func (c *CartController) RemoveFromCart() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
+			return
 		}
 
 		w.WriteHeader(http.StatusOK)

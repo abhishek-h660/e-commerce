@@ -21,12 +21,9 @@ func CollectionCart(db *mongo.Database) *mongo.Collection {
 	return db.Collection("cart")
 }
 
-func (c *CartItem) Save(db *mongo.Database) *mongo.InsertOneResult {
-	res, err := CollectionCart(db).InsertOne(config.DefaultCtx(), c)
-	if err != nil {
-		log.Println(err)
-	}
-	return res
+func (c *CartItem) Save(db *mongo.Database) (*mongo.InsertOneResult, error) {
+	c.Id = primitive.NewObjectIDFromTimestamp(time.Now())
+	return CollectionCart(db).InsertOne(config.DefaultCtx(), c)
 }
 
 func (c *CartItem) Delete(db *mongo.Database) *mongo.DeleteResult {
